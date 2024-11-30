@@ -1,0 +1,39 @@
+name: Java CI Workflow (No Maven)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11' # Or the desired JDK version
+          distribution: 'temurin'
+
+      # Step 3: Compile Java files
+      - name: Compile Java Files
+        run: |
+          mkdir -p bin
+          javac -d bin src/main/java/Calculator.java src/test/java/CalculatorTest.java -cp junit-platform-console-standalone-1.9.2.jar
+
+      # Step 4: Run JUnit Tests
+      - name: Run Tests
+        run: |
+          java -jar junit-platform-console-standalone-1.9.2.jar \
+            --class-path bin \
+            --scan-class-path \
+            --include-classname=.*Test
